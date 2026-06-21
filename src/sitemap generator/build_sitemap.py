@@ -33,7 +33,7 @@ SCAN_DIRS = [
     ".",            # root html files
     "teachers",
     "press",
-    "research",
+    "previews",
 ]
 
 

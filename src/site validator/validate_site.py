@@ -24,10 +24,10 @@ import os
 import re
 import xml.etree.ElementTree as ET
 
-BASE_URL = "https://www.theprescottgirls.com"
+BASE_URL = "https://www.awellregulatedpress.com"
 INTERNAL_DOMAINS = {
-    "www.theprescottgirls.com",
-    "theprescottgirls.com",
+    "www.awellregulatedpress.com",
+    "awellregulatedpress.com",
 }
 
 # These are real site pages, but they should not be checked for sitemap inclusion
@@ -41,7 +41,7 @@ SCAN_HTML_DIRS = [
     ".",
     "teachers",
     "press",
-    "research",
+    "previews",
 ]
 
 ASSET_EXTENSIONS = {
