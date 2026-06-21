@@ -20,7 +20,7 @@ from pathlib import Path
 from urllib.parse import quote
 from datetime import datetime
 
-BASE_URL = "https://www.theprescottgirls.com"
+BASE_URL = "https://www.awellregulatedpress.com"
 
 # Pages to exclude
 EXCLUDE_FILES = {
