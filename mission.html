@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -26,23 +25,46 @@
     	  console.log("Counter.dev disabled for this browser.");
       }
       </script>
-</head>
+<style>
+  .nav-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  .nav-dropdown-link::after {
+    content: " ▾";
+    font-size: 0.8em;
+  }
+  .nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100%;
+    min-width: 190px;
+    padding: 8px 0;
+    background: #fff;
+    border: 1px solid #d8d1c4;
+    box-shadow: 0 6px 16px rgba(0,0,0,.12);
+    z-index: 1000;
+    text-align: left;
+  }
+  .nav-dropdown-menu a {
+    display: block;
+    padding: 8px 16px;
+    white-space: nowrap;
+  }
+  .nav-dropdown:hover .nav-dropdown-menu,
+  .nav-dropdown:focus-within .nav-dropdown-menu {
+    display: block;
+  }
+</style></head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <header>
 <img alt="A Well-Regulated Press logo" class="logo" src="images/A Well-Regulated Press - Transparent.png"/>
 <h1>A Well-Regulated Press</h1>
-<p class="tagline">
-    Historical fiction · Research · Educational resources
-  </p>
-<nav aria-label="Primary navigation">
-<a href="index.html">Home</a>
-<a href="books.html">Books</a>
-<a href="research.html">Research</a>
-<a href="press.html">Press</a>
-<a aria-current="page" href="mission.html">Mission</a>
-<a href="contact.html">Contact</a>
-</nav>
+<p class="tagline">Publishing · Historical research · Education · Public history</p>
+<nav aria-label="Primary navigation"><a href="index.html">Home</a><a href="books.html">Books</a><a aria-current="page" href="mission.html">Mission</a><span class="nav-dropdown"><a class="nav-dropdown-link" href="initiatives.html">Initiatives</a><span class="nav-dropdown-menu"><a href="preservation.html">Preservation</a><a href="research.html">Research</a><a href="interpretation.html">Interpretation</a><a href="education.html">Education</a><a href="community.html">Community</a><a href="outreach.html">Outreach</a></span></span><a href="press.html">Press</a><a href="contact.html">Contact</a></nav>
 </header>
 <main class="container" id="main">
 <section class="section">
@@ -128,9 +150,6 @@
 <div class="section-rule">✦ ✦ ✦</div>
 <section class="section">
 <h2>The Prescott Girls Initiative</h2><p><strong>The Prescott Girls Initiative</strong> is the primary implementation of the mission. It coordinates a collection of related projects that preserve, interpret, and share the history of the Prescott family through research, publishing, education, and public engagement.</p><p>Individual projects support different audiences and objectives while contributing to the larger initiative. Projects may be published through The Prescott Girls, A Well-Regulated Press, museums, educational organizations, or other appropriate partners, with cross-links connecting related work where beneficial.</p>
-
-
-
 </section>
 <div class="section-rule">✦ ✦ ✦</div>
 <section class="section">
@@ -146,7 +165,6 @@
 <li><strong>Public-History Presentations</strong> — talks, workshops, and museum collaborations that share the research, methodology, and interpretive approach with broader audiences.</li>
 </ul>
 </div>
-
 </section>
 <div class="section-rule">✦ ✦ ✦</div>
 <section class="section">
