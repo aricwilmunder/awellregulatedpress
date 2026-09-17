@@ -173,7 +173,7 @@
 
 <script>
 const sheets = Array.from({length:20}, (_,i) =>
-  `assets/habs/drawings/master-pnp-habshaer-me-me0000-me0080-sheet-${String(i).padStart(5,'0')}a.jpg`
+  `assets/HABS/drawings/master-pnp-habshaer-me-me0000-me0080-sheet-${String(i).padStart(5,'0')}a.jpg`
 );
 
 const list = document.getElementById('sheetList');
@@ -196,7 +196,7 @@ function buildList(){
   sheets.forEach((name,i)=>{
     const b = document.createElement('button');
     b.className = 'sheet-btn';
-    b.innerHTML = `<img src="assets/habs/thumbs/${name.split('/').pop()}" alt="" loading="lazy"><span>Sheet ${i+1}</span>`;
+    b.innerHTML = `<img src="assets/HABS/thumbs/${name.split('/').pop()}" alt="" loading="lazy"><span>Sheet ${i+1}</span>`;
     b.title = `HABS Sheet ${i+1}`;
     b.onclick = () => loadSheet(i);
     b.dataset.index = i;
