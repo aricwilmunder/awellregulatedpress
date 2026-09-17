@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pownalborough Court House — HABS Drawings | A Well-Regulated Press</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f3f1ec;
+    color: #222;
+  }
+  header {
+    padding: 18px 22px 12px;
+    background: #fff;
+    border-bottom: 1px solid #d7d2c9;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  header h1 { margin: 0 0 4px; font-size: 22px; }
+  header p { margin: 0; color: #666; font-size: 14px; }
+  .app {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    min-height: calc(100vh - 76px);
+  }
+  aside {
+    padding: 14px;
+    border-right: 1px solid #d7d2c9;
+    background: #faf9f6;
+    overflow: auto;
+  }
+  .sheet-btn {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    border: 1px solid #d8d3ca;
+    background: #fff;
+    color: #222;
+    padding: 9px 10px;
+    margin: 0 0 7px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .sheet-btn:hover { background: #f0ede6; }
+  .sheet-btn.active { outline: 2px solid #555; }
+  .sheet-btn img { width: 72px; height: 52px; object-fit: contain; background: #f4f2ed; border: 1px solid #e2ddd4; }
+  .sheet-btn span { font-weight: 600; }
+  main { padding: 18px; min-width: 0; }
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .toolbar button, .toolbar select {
+    font: inherit;
+    padding: 7px 10px;
+    border: 1px solid #cfc9bf;
+    border-radius: 6px;
+    background: #fff;
+    color: #222;
+  }
+  .status { font-size: 13px; color: #666; }
+  .viewer-wrap {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 16px;
+    align-items: start;
+  }
+  .stage {
+    position: relative;
+    background: #d8d5cf;
+    border: 1px solid #c8c3ba;
+    min-height: 500px;
+    overflow: auto;
+    border-radius: 8px;
+  }
+  #mainCanvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+    background: white;
+    cursor: crosshair;
+  }
+  #lens {
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    border: 2px solid rgba(30,30,30,.7);
+    border-radius: 50%;
+    pointer-events: none;
+    display: none;
+    box-shadow: 0 3px 12px rgba(0,0,0,.28);
+    background-repeat: no-repeat;
+    z-index: 4;
+  }
+  .zoom-panel {
+    position: sticky;
+    top: 96px;
+  }
+  .zoom-panel h2 { font-size: 15px; margin: 0 0 7px; }
+  #zoomCanvas {
+    display: block;
+    width: 100%;
+    background: white;
+    border: 1px solid #c8c3ba;
+    border-radius: 8px;
+  }
+  .note {
+    margin-top: 10px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #666;
+  }
+  @media (max-width: 950px) {
+    .app { grid-template-columns: 1fr; }
+    aside { border-right: 0; border-bottom: 1px solid #d7d2c9; max-height: 220px; }
+    .viewer-wrap { grid-template-columns: 1fr; }
+    .zoom-panel { position: static; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Pownalborough Court House — HABS Drawing Viewer</h1>
+  <p>Select a drawing sheet, then move the pointer over the image to examine architectural details and annotations.</p>
+</header>
+
+<div class="app">
+  <aside id="sheetList"></aside>
+  <main>
+    <div class="toolbar">
+      <label>Magnification
+        <select id="mag">
+          <option value="2">2×</option>
+          <option value="3" selected>3×</option>
+          <option value="4">4×</option>
+          <option value="6">6×</option>
+        </select>
+      </label>
+      <button id="fitBtn">Fit width</button>
+      <button id="actualBtn">100%</button>
+      <span class="status" id="status">Ready</span>
+    </div>
+
+    <div class="viewer-wrap">
+      <div class="stage" id="stage">
+        <canvas id="mainCanvas"></canvas>
+        <div id="lens"></div>
+      </div>
+      <div class="zoom-panel">
+        <h2>Detail</h2>
+        <canvas id="zoomCanvas" width="720" height="720"></canvas>
+        <div class="note">
+          High-resolution derivatives of the original HABS scans are provided for detailed study. Select a sheet at left and move across the drawing to inspect dimensions, notes, and architectural details.
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const sheets = Array.from({length:20}, (_,i) =>
+  `assets/habs/drawings/master-pnp-habshaer-me-me0000-me0080-sheet-${String(i).padStart(5,'0')}a.jpg`
+);
+
+const list = document.getElementById('sheetList');
+const mainCanvas = document.getElementById('mainCanvas');
+const mainCtx = mainCanvas.getContext('2d');
+const zoomCanvas = document.getElementById('zoomCanvas');
+const zoomCtx = zoomCanvas.getContext('2d');
+const stage = document.getElementById('stage');
+const lens = document.getElementById('lens');
+const statusEl = document.getElementById('status');
+const magEl = document.getElementById('mag');
+
+let sourceImage = new Image();
+let currentIndex = 0;
+let displayScale = 1;
+let fitMode = true;
+let lastX = null, lastY = null;
+
+function buildList(){
+  sheets.forEach((name,i)=>{
+    const b = document.createElement('button');
+    b.className = 'sheet-btn';
+    b.innerHTML = `<img src="assets/habs/thumbs/${name.split('/').pop()}" alt="" loading="lazy"><span>Sheet ${i+1}</span>`;
+    b.title = `HABS Sheet ${i+1}`;
+    b.onclick = () => loadSheet(i);
+    b.dataset.index = i;
+    list.appendChild(b);
+  });
+}
+
+function setActive(){
+  document.querySelectorAll('.sheet-btn').forEach(b=>
+    b.classList.toggle('active', Number(b.dataset.index)===currentIndex));
+}
+
+function loadSheet(i){
+  currentIndex = i;
+  setActive();
+  const name = sheets[i];
+  statusEl.textContent = `Loading Sheet ${i+1}…`;
+  lens.style.display = 'none';
+
+  const img = new Image();
+  img.onload = () => {
+    sourceImage = img;
+    fitMode = true;
+    renderMain();
+    lastX = img.naturalWidth/2;
+    lastY = img.naturalHeight/2;
+    drawZoom(lastX,lastY);
+    statusEl.textContent = `Sheet ${i+1} — ${img.naturalWidth.toLocaleString()} × ${img.naturalHeight.toLocaleString()} px`;
+  };
+  img.onerror = () => {
+    statusEl.textContent = `Could not load ${name}`;
+    console.error(`Could not load ${name}`);
+  };
+  img.src = name;
+}
+
+function renderMain(){
+  if(!sourceImage.naturalWidth) return;
+  const maxW = Math.max(300, stage.clientWidth - 2);
+  displayScale = fitMode ? Math.min(1, maxW/sourceImage.naturalWidth) : 1;
+  mainCanvas.width = Math.round(sourceImage.naturalWidth * displayScale);
+  mainCanvas.height = Math.round(sourceImage.naturalHeight * displayScale);
+  mainCtx.imageSmoothingEnabled = true;
+  mainCtx.imageSmoothingQuality = 'high';
+  mainCtx.drawImage(sourceImage, 0, 0, mainCanvas.width, mainCanvas.height);
+}
+
+function drawZoom(srcX, srcY){
+  if(!sourceImage.naturalWidth) return;
+  lastX=srcX; lastY=srcY;
+  const mag = Number(magEl.value);
+  const sw = zoomCanvas.width / mag;
+  const sh = zoomCanvas.height / mag;
+  let sx = srcX - sw/2;
+  let sy = srcY - sh/2;
+  sx = Math.max(0, Math.min(sourceImage.naturalWidth-sw, sx));
+  sy = Math.max(0, Math.min(sourceImage.naturalHeight-sh, sy));
+  zoomCtx.clearRect(0,0,zoomCanvas.width,zoomCanvas.height);
+  zoomCtx.imageSmoothingEnabled = true;
+  zoomCtx.imageSmoothingQuality = 'high';
+  zoomCtx.drawImage(sourceImage, sx, sy, sw, sh, 0, 0, zoomCanvas.width, zoomCanvas.height);
+}
+
+mainCanvas.addEventListener('mousemove', e=>{
+  const r = mainCanvas.getBoundingClientRect();
+  const xDisp = e.clientX-r.left;
+  const yDisp = e.clientY-r.top;
+  const srcX = xDisp / r.width * sourceImage.naturalWidth;
+  const srcY = yDisp / r.height * sourceImage.naturalHeight;
+  drawZoom(srcX, srcY);
+
+  lens.style.display='block';
+  lens.style.left = `${mainCanvas.offsetLeft + xDisp - 85}px`;
+  lens.style.top = `${mainCanvas.offsetTop + yDisp - 85}px`;
+  const mag = Number(magEl.value);
+  lens.style.backgroundImage = `url("${sheets[currentIndex]}")`;
+  lens.style.backgroundSize = `${r.width*mag}px ${r.height*mag}px`;
+  lens.style.backgroundPosition = `${85 - xDisp*mag}px ${85 - yDisp*mag}px`;
+});
+mainCanvas.addEventListener('mouseleave', ()=> lens.style.display='none');
+magEl.addEventListener('change', ()=> {
+  if(lastX !== null) drawZoom(lastX,lastY);
+});
+
+document.getElementById('fitBtn').onclick=()=>{ fitMode=true; renderMain(); };
+document.getElementById('actualBtn').onclick=()=>{ fitMode=false; renderMain(); };
+window.addEventListener('resize', ()=>{ if(fitMode) renderMain(); });
+
+buildList();
+loadSheet(0);
+</script>
+</body>
+</html>
