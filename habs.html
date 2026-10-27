@@ -1,292 +1,41 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pownalborough Court House — HABS Drawings | A Well-Regulated Press</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pownalborough Court House — HABS Drawing Viewer</title>
 <style>
-  :root { color-scheme: light dark; }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #f3f1ec;
-    color: #222;
-  }
-  header {
-    padding: 18px 22px 12px;
-    background: #fff;
-    border-bottom: 1px solid #d7d2c9;
-    position: sticky;
-    top: 0;
-    z-index: 5;
-  }
-  header h1 { margin: 0 0 4px; font-size: 22px; }
-  header p { margin: 0; color: #666; font-size: 14px; }
-  .app {
-    display: grid;
-    grid-template-columns: 280px minmax(0, 1fr);
-    min-height: calc(100vh - 76px);
-  }
-  aside {
-    padding: 14px;
-    border-right: 1px solid #d7d2c9;
-    background: #faf9f6;
-    overflow: auto;
-  }
-  .sheet-btn {
-    display: grid;
-    grid-template-columns: 72px 1fr;
-    gap: 10px;
-    align-items: center;
-    width: 100%;
-    text-align: left;
-    border: 1px solid #d8d3ca;
-    background: #fff;
-    color: #222;
-    padding: 9px 10px;
-    margin: 0 0 7px;
-    border-radius: 7px;
-    cursor: pointer;
-    font-size: 13px;
-  }
-  .sheet-btn:hover { background: #f0ede6; }
-  .sheet-btn.active { outline: 2px solid #555; }
-  .sheet-btn img { width: 72px; height: 52px; object-fit: contain; background: #f4f2ed; border: 1px solid #e2ddd4; }
-  .sheet-btn span { font-weight: 600; }
-  main { padding: 18px; min-width: 0; }
-  .toolbar {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-  }
-  .toolbar button, .toolbar select {
-    font: inherit;
-    padding: 7px 10px;
-    border: 1px solid #cfc9bf;
-    border-radius: 6px;
-    background: #fff;
-    color: #222;
-  }
-  .status { font-size: 13px; color: #666; }
-  .viewer-wrap {
-    position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 360px;
-    gap: 16px;
-    align-items: start;
-  }
-  .stage {
-    position: relative;
-    background: #d8d5cf;
-    border: 1px solid #c8c3ba;
-    min-height: 500px;
-    overflow: auto;
-    border-radius: 8px;
-  }
-  #mainCanvas {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    margin: 0 auto;
-    background: white;
-    cursor: crosshair;
-  }
-  #lens {
-    position: absolute;
-    width: 170px;
-    height: 170px;
-    border: 2px solid rgba(30,30,30,.7);
-    border-radius: 50%;
-    pointer-events: none;
-    display: none;
-    box-shadow: 0 3px 12px rgba(0,0,0,.28);
-    background-repeat: no-repeat;
-    z-index: 4;
-  }
-  .zoom-panel {
-    position: sticky;
-    top: 96px;
-  }
-  .zoom-panel h2 { font-size: 15px; margin: 0 0 7px; }
-  #zoomCanvas {
-    display: block;
-    width: 100%;
-    background: white;
-    border: 1px solid #c8c3ba;
-    border-radius: 8px;
-  }
-  .note {
-    margin-top: 10px;
-    font-size: 12px;
-    line-height: 1.45;
-    color: #666;
-  }
-  @media (max-width: 950px) {
-    .app { grid-template-columns: 1fr; }
-    aside { border-right: 0; border-bottom: 1px solid #d7d2c9; max-height: 220px; }
-    .viewer-wrap { grid-template-columns: 1fr; }
-    .zoom-panel { position: static; }
-  }
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#222;background:#d8d5cf}
+.app{height:100dvh;display:flex;flex-direction:column}.toolbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fff;border-bottom:1px solid #ccc;flex-shrink:0;flex-wrap:wrap;z-index:2}
+.toolbar strong{font-size:15px;margin-right:12px}.toolbar button,.toolbar select{font:inherit;background:white;color:#222;border:1px solid #bbb;border-radius:5px;padding:6px 10px;cursor:pointer}.toolbar button:hover{background:#eee}.toolbar .status{color:#666;font-size:12px;margin-left:auto}.viewer{flex:1;min-height:0;position:relative;overflow:hidden;cursor:grab;touch-action:none}.viewer.dragging{cursor:grabbing}canvas{display:block;width:100%;height:100%;position:absolute;inset:0}.hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:#ffffffdd;border-radius:5px;padding:5px 10px;color:#555;font-size:12px;pointer-events:none;white-space:nowrap}.sheetstrip{height:90px;flex-shrink:0;background:#faf9f6;border-top:1px solid #ccc;display:flex;gap:7px;padding:7px;overflow-x:auto;overflow-y:hidden}.sheet-btn{flex:0 0 105px;display:flex;align-items:center;gap:5px;flex-direction:column;border:1px solid #ccc;border-radius:5px;background:#fff;padding:3px;cursor:pointer;color:#222;font-size:11px}.sheet-btn.active{outline:2px solid #333}.sheet-btn img{height:49px;max-width:94px;object-fit:contain}.sheet-btn:hover{background:#eee}@media(max-width:650px){.toolbar strong{width:100%}.toolbar .status{margin-left:0}.sheetstrip{height:77px}.sheet-btn{flex-basis:85px}.sheet-btn img{height:36px}.hint{font-size:10px}}
 </style>
-</head>
-<body>
-<header>
-  <h1>Pownalborough Court House — HABS Drawing Viewer</h1>
-  <p>Select a drawing sheet, then move the pointer over the image to examine architectural details and annotations.</p>
-</header>
-
-<div class="app">
-  <aside id="sheetList"></aside>
-  <main>
-    <div class="toolbar">
-      <label>Magnification
-        <select id="mag">
-          <option value="2">2×</option>
-          <option value="3" selected>3×</option>
-          <option value="4">4×</option>
-          <option value="6">6×</option>
-        </select>
-      </label>
-      <button id="fitBtn">Fit width</button>
-      <button id="actualBtn">100%</button>
-      <span class="status" id="status">Ready</span>
-    </div>
-
-    <div class="viewer-wrap">
-      <div class="stage" id="stage">
-        <canvas id="mainCanvas"></canvas>
-        <div id="lens"></div>
-      </div>
-      <div class="zoom-panel">
-        <h2>Detail</h2>
-        <canvas id="zoomCanvas" width="720" height="720"></canvas>
-        <div class="note">
-          High-resolution derivatives of the original HABS scans are provided for detailed study. Select a sheet at left and move across the drawing to inspect dimensions, notes, and architectural details.
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
-
+<!-- Counter.dev -->
 <script>
-const sheets = Array.from({length:20}, (_,i) =>
-  `assets/HABS/drawings/master-pnp-habshaer-me-me0000-me0080-sheet-${String(i).padStart(5,'0')}a.jpg`
-);
-
-const list = document.getElementById('sheetList');
-const mainCanvas = document.getElementById('mainCanvas');
-const mainCtx = mainCanvas.getContext('2d');
-const zoomCanvas = document.getElementById('zoomCanvas');
-const zoomCtx = zoomCanvas.getContext('2d');
-const stage = document.getElementById('stage');
-const lens = document.getElementById('lens');
-const statusEl = document.getElementById('status');
-const magEl = document.getElementById('mag');
-
-let sourceImage = new Image();
-let currentIndex = 0;
-let displayScale = 1;
-let fitMode = true;
-let lastX = null, lastY = null;
-
-function buildList(){
-  sheets.forEach((name,i)=>{
-    const b = document.createElement('button');
-    b.className = 'sheet-btn';
-    b.innerHTML = `<img src="assets/HABS/thumbs/${name.split('/').pop()}" alt="" loading="lazy"><span>Sheet ${i+1}</span>`;
-    b.title = `HABS Sheet ${i+1}`;
-    b.onclick = () => loadSheet(i);
-    b.dataset.index = i;
-    list.appendChild(b);
-  });
-}
-
-function setActive(){
-  document.querySelectorAll('.sheet-btn').forEach(b=>
-    b.classList.toggle('active', Number(b.dataset.index)===currentIndex));
-}
-
-function loadSheet(i){
-  currentIndex = i;
-  setActive();
-  const name = sheets[i];
-  statusEl.textContent = `Loading Sheet ${i+1}…`;
-  lens.style.display = 'none';
-
-  const img = new Image();
-  img.onload = () => {
-    sourceImage = img;
-    fitMode = true;
-    renderMain();
-    lastX = img.naturalWidth/2;
-    lastY = img.naturalHeight/2;
-    drawZoom(lastX,lastY);
-    statusEl.textContent = `Sheet ${i+1} — ${img.naturalWidth.toLocaleString()} × ${img.naturalHeight.toLocaleString()} px`;
-  };
-  img.onerror = () => {
-    statusEl.textContent = `Could not load ${name}`;
-    console.error(`Could not load ${name}`);
-  };
-  img.src = name;
-}
-
-function renderMain(){
-  if(!sourceImage.naturalWidth) return;
-  const maxW = Math.max(300, stage.clientWidth - 2);
-  displayScale = fitMode ? Math.min(1, maxW/sourceImage.naturalWidth) : 1;
-  mainCanvas.width = Math.round(sourceImage.naturalWidth * displayScale);
-  mainCanvas.height = Math.round(sourceImage.naturalHeight * displayScale);
-  mainCtx.imageSmoothingEnabled = true;
-  mainCtx.imageSmoothingQuality = 'high';
-  mainCtx.drawImage(sourceImage, 0, 0, mainCanvas.width, mainCanvas.height);
-}
-
-function drawZoom(srcX, srcY){
-  if(!sourceImage.naturalWidth) return;
-  lastX=srcX; lastY=srcY;
-  const mag = Number(magEl.value);
-  const sw = zoomCanvas.width / mag;
-  const sh = zoomCanvas.height / mag;
-  let sx = srcX - sw/2;
-  let sy = srcY - sh/2;
-  sx = Math.max(0, Math.min(sourceImage.naturalWidth-sw, sx));
-  sy = Math.max(0, Math.min(sourceImage.naturalHeight-sh, sy));
-  zoomCtx.clearRect(0,0,zoomCanvas.width,zoomCanvas.height);
-  zoomCtx.imageSmoothingEnabled = true;
-  zoomCtx.imageSmoothingQuality = 'high';
-  zoomCtx.drawImage(sourceImage, sx, sy, sw, sh, 0, 0, zoomCanvas.width, zoomCanvas.height);
-}
-
-mainCanvas.addEventListener('mousemove', e=>{
-  const r = mainCanvas.getBoundingClientRect();
-  const xDisp = e.clientX-r.left;
-  const yDisp = e.clientY-r.top;
-  const srcX = xDisp / r.width * sourceImage.naturalWidth;
-  const srcY = yDisp / r.height * sourceImage.naturalHeight;
-  drawZoom(srcX, srcY);
-
-  lens.style.display='block';
-  lens.style.left = `${mainCanvas.offsetLeft + xDisp - 85}px`;
-  lens.style.top = `${mainCanvas.offsetTop + yDisp - 85}px`;
-  const mag = Number(magEl.value);
-  lens.style.backgroundImage = `url("${sheets[currentIndex]}")`;
-  lens.style.backgroundSize = `${r.width*mag}px ${r.height*mag}px`;
-  lens.style.backgroundPosition = `${85 - xDisp*mag}px ${85 - yDisp*mag}px`;
-});
-mainCanvas.addEventListener('mouseleave', ()=> lens.style.display='none');
-magEl.addEventListener('change', ()=> {
-  if(lastX !== null) drawZoom(lastX,lastY);
-});
-
-document.getElementById('fitBtn').onclick=()=>{ fitMode=true; renderMain(); };
-document.getElementById('actualBtn').onclick=()=>{ fitMode=false; renderMain(); };
-window.addEventListener('resize', ()=>{ if(fitMode) renderMain(); });
-
-buildList();
-loadSheet(0);
-</script>
-</body>
-</html>
+      if (localStorage.getItem("CounterDevIgnore") !== "true") {
+          const script = document.createElement("script");
+          script.src = "https://cdn.counter.dev/script.js";
+          script.dataset.id = "800e0f07-e8c7-43c4-bdaf-617aab5c0504";
+          script.dataset.utcoffset = "-7";
+          script.dataset.trackPath = "true";
+          script.defer = true;
+          document.head.appendChild(script);
+      } else {
+    	  console.log("Counter.dev disabled for this browser.");
+      }
+      </script>
+</head>
+<body><div class="app"><div class="toolbar"><strong>HABS Drawing Viewer</strong><button id="prev" title="Previous sheet">◀</button><select id="sheetSelect" aria-label="Select sheet"></select><button id="next" title="Next sheet">▶</button><button id="minus" title="Zoom out">−</button><button id="plus" title="Zoom in">+</button><button id="fit">Fit sheet</button><button id="actual">100%</button><span id="zoomLabel">100%</span><span class="status" id="status">Ready</span></div><div class="viewer" id="viewer"><canvas id="canvas"></canvas><div class="hint">Drag to pan · Scroll to zoom · Double-click to zoom</div></div><div class="sheetstrip" id="sheetList"></div></div>
+<script>
+const sheets=Array.from({length:20},(_,i)=>`assets/HABS/drawings/master-pnp-habshaer-me-me0000-me0080-sheet-${String(i).padStart(5,'0')}a.jpg`);
+const viewer=document.getElementById('viewer'),canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d'),statusEl=document.getElementById('status'),zoomLabel=document.getElementById('zoomLabel'),select=document.getElementById('sheetSelect'),strip=document.getElementById('sheetList');
+let img=new Image(),index=0,scale=1,panX=0,panY=0,drag=null,request=0,loadToken=0;
+function size(){const r=viewer.getBoundingClientRect(),dpr=window.devicePixelRatio||1;canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);canvas.style.width=r.width+'px';canvas.style.height=r.height+'px';draw()}
+function draw(){if(!canvas.width)return;const dpr=window.devicePixelRatio||1;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#d8d5cf';ctx.fillRect(0,0,canvas.width,canvas.height);if(!img.naturalWidth)return;ctx.setTransform(dpr*scale,0,0,dpr*scale,dpr*panX,dpr*panY);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,0,0);zoomLabel.textContent=Math.round(scale*100)+'%'}
+function redraw(){if(!request)request=requestAnimationFrame(()=>{request=0;draw()})}
+function fit(){if(!img.naturalWidth)return;scale=Math.min(viewer.clientWidth/img.naturalWidth,viewer.clientHeight/img.naturalHeight);center();redraw()}
+function center(){panX=(viewer.clientWidth-img.naturalWidth*scale)/2;panY=(viewer.clientHeight-img.naturalHeight*scale)/2}
+function zoom(factor,x=viewer.clientWidth/2,y=viewer.clientHeight/2){if(!img.naturalWidth)return;const next=Math.max(.02,Math.min(16,scale*factor));panX=x-(x-panX)*next/scale;panY=y-(y-panY)*next/scale;scale=next;redraw()}
+function load(i){const token=++loadToken;index=(i+sheets.length)%sheets.length;const target=index;select.value=index;document.querySelectorAll('.sheet-btn').forEach((b,n)=>b.classList.toggle('active',n===index));statusEl.textContent='Loading sheet '+(index+1)+'…';const next=new Image();next.onload=()=>{if(token!==loadToken)return;img=next;fit();statusEl.textContent=`Sheet ${target+1} · ${img.naturalWidth.toLocaleString()} × ${img.naturalHeight.toLocaleString()} px`};next.onerror=()=>{if(token===loadToken)statusEl.textContent='Unable to load '+sheets[target]};next.src=sheets[target]}
+sheets.forEach((path,i)=>{const opt=document.createElement('option');opt.value=i;opt.textContent='Sheet '+(i+1);select.append(opt);const b=document.createElement('button');b.className='sheet-btn';b.innerHTML=`<img loading="lazy" src="assets/HABS/thumbs/${path.split('/').pop()}" alt=""><span>Sheet ${i+1}</span>`;b.onclick=()=>load(i);strip.append(b)});
+select.onchange=()=>load(Number(select.value));document.getElementById('prev').onclick=()=>load(index-1);document.getElementById('next').onclick=()=>load(index+1);document.getElementById('plus').onclick=()=>zoom(1.5);document.getElementById('minus').onclick=()=>zoom(1/1.5);document.getElementById('fit').onclick=fit;document.getElementById('actual').onclick=()=>{if(!img.naturalWidth)return;const cx=(viewer.clientWidth/2-panX)/scale,cy=(viewer.clientHeight/2-panY)/scale;scale=1;panX=viewer.clientWidth/2-cx;panY=viewer.clientHeight/2-cy;redraw()};
+viewer.addEventListener('wheel',e=>{e.preventDefault();const r=viewer.getBoundingClientRect();zoom(Math.exp(-e.deltaY*.0015),e.clientX-r.left,e.clientY-r.top)},{passive:false});viewer.addEventListener('pointerdown',e=>{if(e.button!==0)return;drag={x:e.clientX,y:e.clientY,px:panX,py:panY};viewer.setPointerCapture(e.pointerId);viewer.classList.add('dragging')});viewer.addEventListener('pointermove',e=>{if(!drag)return;panX=drag.px+e.clientX-drag.x;panY=drag.py+e.clientY-drag.y;redraw()});function stop(){drag=null;viewer.classList.remove('dragging')}viewer.addEventListener('pointerup',stop);viewer.addEventListener('pointercancel',stop);viewer.addEventListener('dblclick',e=>{const r=viewer.getBoundingClientRect();zoom(2,e.clientX-r.left,e.clientY-r.top)});window.addEventListener('resize',size);new ResizeObserver(size).observe(viewer);document.addEventListener('keydown',e=>{if(e.target.tagName==='SELECT')return;if(e.key==='+')zoom(1.5);if(e.key==='-')zoom(1/1.5);if(e.key==='ArrowRight')load(index+1);if(e.key==='ArrowLeft')load(index-1)});size();load(0);
+</script></body></html>
